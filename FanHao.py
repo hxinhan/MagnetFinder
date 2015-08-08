@@ -4,16 +4,8 @@ import urllib2
 import re 
 import random
 import httplib
-#import ssl
+from bs4 import BeautifulSoup
 
-# Ugly hack to force SSLv3 and avoid
-# urllib2.URLError: <urlopen error [Errno 1] _ssl.c:504: error:14077438:SSL routines:SSL23_GET_SERVER_HELLO:tlsv1 alert internal error>
-#try:
-#    import ssl
-#    ssl.create_default_https_context = ssl._create_unverified_context
-#    ssl.PROTOCOL_SSLv23 = ssl.PROTOCOL_TLSv1
-#except:
-#    pass
 '''
 import ssl
 from functools import wraps
@@ -45,6 +37,13 @@ class ProxyServer:
         self.speed=speed
         self.proxy_type=proxy_type
         self.country=country
+
+class FanHao:
+    def __init__(self,title,file_size,downloading_count,magnet_url):
+        self.title = title
+        self.file_size = file_size
+        self.downloading_count = downloading_count
+        self.magnet_url = magnet_url
 
 def proxy_test():
     test_headers = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
@@ -132,19 +131,40 @@ if enable_proxy == True:
     print 'Current Proxy Location %s'%current_proxy.country
 
 fanhao = raw_input("请输入想要查找的番号:")
-print fanhao
-name_fanhao = re.compile('(?isu)<table class="torrent_name_tbl">(.*?)</table>')
 
 proxy_headers = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
-#fanhao_url = 'https://btdigg.org/search?info_hash=&q='+fanhao
-#fanhao_url = 'https://btdigg.org/'
-#fanhao_url = 'http://www.torrentkitty.org/search/'+fanhao+'/'
 fanhao_url = 'http://www.cili.tv/search/'+fanhao+'_ctime_1.html'
 
-#fanhao_request = urllib2.Request(fanhao_url,headers=proxy_headers)
 fanhao_request = urllib2.Request(fanhao_url)
 fanhao_response = urllib2.urlopen(fanhao_request)
 fanhao_html = fanhao_response.read()
-print fanhao_html
-for fanhao in name_fanhao.findall(fanhao_html):
-    print fanhao
+#print fanhao_html
+
+#for fanhao in name_fanhao.findall(fanhao_html):
+#    print fanhao
+
+soup = BeautifulSoup(fanhao_html)
+soup_items = soup.find_all("div",attrs={"class":"item"})
+
+if soup_items:
+    fanhaos = []
+    for item in soup_items:
+        title = item.a.text.strip()
+        info = item.find("div",attrs={"class":"info"}) 
+        spans = info.find_all("span")
+        file_size = str(spans[1].b.text)
+        downloading_count = str(spans[2].b.string)
+        magnet_url = str(spans[3].find("a").get('href'))
+        fanhao = FanHao(title,file_size,downloading_count,magnet_url)
+        fanhaos.append(fanhao)
+    
+    for fanhao in fanhaos:
+        print u'名称:'+fanhao.title
+        print u'文件大小:'+fanhao.file_size
+        print u'热度:'+fanhao.downloading_count
+        print u'磁力链接:'+fanhao.magnet_url
+        print '-'*40
+
+
+else:
+    print u'抱歉未找到相关资源！'
