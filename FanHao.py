@@ -41,19 +41,16 @@ def proxy_test():
     print 'Proxy Testing...'
     test_headers = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
     test_url = 'http://www.google.com'
-    #test_url2 = 'http://www.ip.cn/' 
-    #test_url2 = 'http://ip.chinaz.com'
-    test_url2 = 'http://www.whereisip.net/'
+    #test_url2 = 'http://www.whereisip.net/'
     test_request = urllib2.Request(test_url,headers=test_headers)
     try:
         test_response = urllib2.urlopen(test_request,timeout=10)
         #print test_response.getcode()
         if test_response.getcode()==200:
-            print '-'*200 
-            test_request2 = urllib2.Request(test_url2,headers=test_headers)
-            test_response2 = urllib2.urlopen(test_request2,timeout=10)
-            print test_response2.read()
-            
+            #print '-'*200 
+            #test_request2 = urllib2.Request(test_url2,headers=test_headers)
+            #test_response2 = urllib2.urlopen(test_request2,timeout=10)
+            #print test_response2.read()
             print u'Configured proxy successfully!'
             global proxy_configured 
             proxy_configured = True
@@ -73,7 +70,7 @@ def find_highest_speed(proxy_list):
                 temp_proxy = proxy_server
     print '*'*40
     print 'Temp Proxy Address %s'%temp_proxy.proxy_address
-    print 'Temp Proxy Speed %s'%temp_proxy.speed
+    print 'Temp Proxy Speed %s/s'%temp_proxy.speed
     print '*'*40
     proxy_list.remove(temp_proxy)
     return temp_proxy,proxy_list
@@ -139,26 +136,33 @@ if enable_proxy == True:
 
 fanhao = raw_input("请输入想要查找的番号:")
 
-test_headers = {'Host':'www.torrentkitty.org','Connection':'keep-alive','Cache-Control':'max-age=0','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4','Accept-Language':'q=0.8,en','If-None-Match':'4202560e','Referer':'http://www.torrentkitty.org/search/','If-Modified-Since':'Sat, 08 Aug 2015 18:47:00 GMT','Cookie':'HstCfa3003997=1438801265109; HstCmu3003997=1438801265109; incap_ses_199_146743=R31earu7U0OxdfEVqR7DAuMTxlUAAAAAMBoI2K4YLlIg1Jnqzr4gkA==; PHPSESSID=8b70656c373fa6400655b55c8ff03da5; visid_incap_146743=Vg5UDPrrT+mNp+l27roE3W5dwlUAAAAAQUIPAAAAAABf4pjnr//PBRrXq7Lv3eFt; incap_ses_200_146743=tVhjBU46egfUWxVPyYvGAhBIxlUAAAAA3EOij7dhWw8dKYZl1KvQvg==; HstCla3003997=1439062696729; HstPn3003997=10; HstPt3003997=36; HstCnv3003997=4; HstCns3003997=10; noadvtday=0'}
+test_headers = {'Host':'www.torrentkitty.org','Connection':'keep-alive','Cache-Control':'max-age=0','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4','Accept-Language':'q=0.8,en','If-None-Match':'4202560e','Referer':'http://www.torrentkitty.org/search/','If-Modified-Since':'Sat, 08 Aug 2015 18:47:00 GMT','Cookie':'incap_ses_200_146743=QUn7VypDaye+j49SyYvGAoOpx1UAAAAAJuqGCnYai0FaUBNeI5y23Q==;'}
 
-proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3','Accept-Encoding':'gzip','Connection':'close','Referer':'http://www.torrentkitty.org/search/','Host':'www.torrentkitty.org','Cookie':'PHPSESSID=8b70656c373fa6400655b55c8ff03da5;'}
+proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
 #fanhao_url = 'http://www.cili.tv/search/'+fanhao+'_ctime_1.html'
-fanhao_url = 'http://www.torrentkitty.org/search/SHKD-321/'
+fanhao_url = 'http://www.torrentkitty.org/search/SNIS-338/'
+#fanhao_url = 'http://www.torrentkitty.org/css/font.css'
+        
+proxy_request = urllib2.Request(fanhao_url,headers=test_headers)
+#proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+response = urllib2.urlopen(proxy_request) #timeout=10
+fanhao_html = response.read()
+print fanhao_html
+print response.info()
 
-'''
+
+
 cookie = cookielib.CookieJar()
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 req = urllib2.Request(fanhao_url,headers=test_headers)
 result = opener.open(req)
-print result.read()
+#print result.read()
 for item in cookie:
     print 'Name = '+item.name
     print 'Value = '+item.value
-'''
+
 
 #print fanhao_html.decode('gb2312','ignore').encode('utf-8')
-#for fanhao in name_fanhao.findall(fanhao_html):
-#    print fanhao
 
 '''
 soup = BeautifulSoup(fanhao_html)
