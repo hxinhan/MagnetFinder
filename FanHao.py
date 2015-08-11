@@ -46,7 +46,6 @@ def cili_parse(fanhao):
 '''
 test_headers = {'Host':'www.torrentkitty.org','Connection':'keep-alive','Cache-Control':'max-age=0','Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8','User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4','Accept-Language':'q=0.8,en','If-None-Match':'4202560e','Referer':'http://www.torrentkitty.org/search/','If-Modified-Since':'Sat, 08 Aug 2015 18:47:00 GMT','Cookie':'incap_ses_200_146743=QUn7VypDaye+j49SyYvGAoOpx1UAAAAAJuqGCnYai0FaUBNeI5y23Q==;'}
 
-#fanhao_url = 'http://www.cili.tv/search/'+fanhao+'_ctime_1.html'
 fanhao_url = 'http://www.torrentkitty.org/search/SNIS-338/'
 #fanhao_url = 'http://www.torrentkitty.org/css/font.css'
 
