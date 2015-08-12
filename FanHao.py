@@ -30,8 +30,9 @@ def cili_parse(fanhao):
             file_size = str(spans[1].b.text)
             downloading_count = str(spans[2].b.string)
             magnet_url = str(spans[3].find("a").get('href'))
-            resource = 'http://www.cili.tv'
-            fanhao = FanHao(title,file_size,downloading_count,magnet_url,resource)
+            resource = 'Cili'
+            resource_url = 'http://www.cili.tv'
+            fanhao = FanHao(title,file_size,downloading_count,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
     
         for fanhao in fanhaos:
