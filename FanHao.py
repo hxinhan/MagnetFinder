@@ -34,12 +34,18 @@ def cili_parse(fanhao):
             resource_url = 'http://www.cili.tv'
             fanhao = FanHao(title,file_size,downloading_count,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
+        
+        return fanhaos
+
+def print_result(fanhaos):
     
+    if fanhaos:
         for fanhao in fanhaos:
             print u'名称:'+fanhao.title
             print u'文件大小:'+fanhao.file_size
             print u'热度:'+fanhao.downloading_count
             print u'磁力链接:'+fanhao.magnet_url
+            print u'来源:'+fanhao.resource
             print '-'*40
         print u'资源数:%d个'%len(fanhaos)
     else:
@@ -97,6 +103,7 @@ if __name__ == '__main__':
     
     fanhao = raw_input("请输入想要查找的番号:")
 
-    cili_parse(fanhao)
+    fanhaos = cili_parse(fanhao)
     
+    print_result(fanhaos)
 
