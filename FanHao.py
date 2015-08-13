@@ -24,6 +24,8 @@ import re
 import random
 import cookielib
 import time
+import os
+import webbrowser
 from Proxy import get_proxy_list
 from Proxy import proxy_setting
 from Proxy import proxy_test
@@ -193,12 +195,14 @@ def set_headers():
     return random.choice(headers)
 
 if __name__ == '__main__':
-    print '='*40
-    print '='
-    print '= 搜立方'
-    print '='
-    print '= Coded by Hanson'
-    print '='*40
+    print '*'*40
+    print '*'
+    print '*'
+    print '* Magnet Finder'
+    print '*'
+    print '* V 1.0.1'
+    print '* Coded by Hanson'
+    print '*'*40
 
     enable_proxy = False
 
@@ -256,3 +260,7 @@ if __name__ == '__main__':
     finish_time = time.time()
     elapsed = finish_time - start_time
     print '耗时:%s 秒'%elapsed
+
+    html_url = 'file://'+os.getcwd()+'/Index.html'
+    webbrowser.open(html_url,new=2)
+
