@@ -37,6 +37,29 @@ def cili_parse(fanhao):
         
         return fanhaos
 
+def btdb_parse(fanhao):
+    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    fanhao_url = 'http://btdb.in/q/%s/'%fanhao
+    proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+    response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
+    fanhao_html = response.read()
+
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find_all("li",attrs={"class":"search-ret-item"})
+    if soup_items:
+        fanhaos = []
+        for item in soup_items:
+            title = item.find("h1").find("a").get("title")
+            info = item.find("div",attrs={"class":"item-meta-info"}).find_all("span",attrs={"class":"item-meta-info-value"})
+            file_size = info[0].text
+            downloading_count = info[-1].text
+            magnet_url = item.find("div",attrs={"class":"item-meta-info"}).find("a",attrs={"class":"magnet"}).get("href")
+            resource = 'BTDB'
+            resource_url = 'http://btdb.in'
+            fanhao = FanHao(title,file_size,downloading_count,magnet_url,resource,resource_url)
+            fanhaos.append(fanhao)
+        return fanhaos
+
 def print_result(fanhaos):
     
     if fanhaos:
@@ -103,7 +126,11 @@ if __name__ == '__main__':
     
     fanhao = raw_input("请输入想要查找的番号:")
 
-    fanhaos = cili_parse(fanhao)
+    #cili_fanhaos = []
+    #cili_fanhaos = cili_parse(fanhao)
+    btdb_fanhaos = []
+    btdb_fanhaos = btdb_parse(fanhao) 
+    #fanhaos = btdb_fanhaos.append(cili_fanhaos)
     
-    print_result(fanhaos)
+    print_result(btdb_fanhaos)
 
