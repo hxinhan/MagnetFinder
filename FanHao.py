@@ -18,8 +18,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
 GNU General Public License for more details.
 """
 
-
-
 import urllib
 import urllib2
 import re 
@@ -33,9 +31,7 @@ from bs4 import BeautifulSoup
 from Class import FanHao
 
 
-
 def cili_parse(fanhao,proxy_headers):
-    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
     fanhao_url = 'http://www.cili.tv/search/'+urllib.quote(fanhao)+'_ctime_1.html'
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
@@ -60,7 +56,6 @@ def cili_parse(fanhao,proxy_headers):
         return fanhaos
 
 def btdb_parse(fanhao,proxy_headers):
-    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
     fanhao_url = 'http://btdb.in/q/%s/'%fanhao
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
@@ -84,7 +79,6 @@ def btdb_parse(fanhao,proxy_headers):
         return fanhaos
 
 def btbook_parse(fanhao,proxy_headers):
-    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
     fanhao_url = 'http://www.btbook.net/search/'+urllib.quote(fanhao)+'.html'
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
@@ -107,7 +101,6 @@ def btbook_parse(fanhao,proxy_headers):
         return fanhaos
 
 def btcherry_parse(fanhao,proxy_headers):
-    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
     fanhao_url = 'http://www.btcherry.net/search?keyword='+urllib.quote(fanhao)
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
@@ -189,15 +182,6 @@ for item in cookie:
     print 'Name = '+item.name
     print 'Value = '+item.value
 '''
-
-'''
-print '-'*200 
-test_url2 = 'http://btdb.in/q/snis-338/'
-test_request2 = urllib2.Request(test_url2,headers=test_headers)
-test_response2 = urllib2.urlopen(test_request2,timeout=20)
-print test_response2.read()
-'''
-
 #print fanhao_html.decode('gb2312','ignore').encode('utf-8')
 
 def set_headers():
@@ -207,7 +191,6 @@ def set_headers():
     headers4 = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
     headers = [headers1,headers2,headers3,headers4]
     return random.choice(headers)
-
 
 if __name__ == '__main__':
     print '='*40
