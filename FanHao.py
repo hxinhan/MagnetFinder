@@ -107,14 +107,12 @@ def btcherry_parse(fanhao,proxy_headers):
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
     fanhao_html = response.read()
-    print fahao_html
 
     soup = BeautifulSoup(fanhao_html)
     soup_items = soup.find_all("div",attrs={"class":"r"})
     if soup_items:
         fanhaos = []
         for item in soup_items:
-            '''
             try:
                 title = item.find("h5",attrs={"class":"h"}).text
             except Exception:
@@ -141,7 +139,7 @@ def btcherry_parse(fanhao,proxy_headers):
                 magnet_url = item.find("div").find("a").get("href")
             except Exception:
                 pass
-
+            '''
             resource = 'BTCherry'
             resource_url = 'http://www.btcherry.net'
             fanhao = FanHao(title,file_size,None,file_number,magnet_url,resource,resource_url)
@@ -200,6 +198,8 @@ def create_url(fanhaos):
     fanhao_tbody_html = soup.find("tbody")
     for index,fanhao in enumerate(fanhaos):
         tr_tag = soup.new_tag('tr')
+        index = int(index)
+        length = len(fanhaos)
         fanhao_tbody_html.insert(0,tr_tag)
         
         fanhao_tbody_tr = fanhao_tbody_html.find('tr')
@@ -252,11 +252,12 @@ def open_browser(soup):
 if __name__ == '__main__':
     print '*'*40
     print '*'
-    print '*'
     print '* Magnet Finder'
     print '*'
     print '* V 1.0.1'
     print '* Coded by Hanson'
+    print '* Github https://github.com/HansonHH'
+    print '*'
     print '*'*40
 
     enable_proxy = False
@@ -308,7 +309,7 @@ if __name__ == '__main__':
 
     fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
     # Sorting bt descending
-    fanhaos.sort(key=lambda fanhao:fanhao.downloading_count,reverse=True)
+    fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
     
     print_result(fanhaos)
 
