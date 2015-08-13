@@ -4,6 +4,7 @@ import urllib2
 import re 
 import random
 import cookielib
+import time
 from Proxy import get_proxy_list
 from Proxy import proxy_setting
 from Proxy import proxy_test
@@ -170,7 +171,6 @@ for item in cookie:
 
 '''
 print '-'*200 
-test_headers = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
 test_url2 = 'http://btdb.in/q/snis-338/'
 test_request2 = urllib2.Request(test_url2,headers=test_headers)
 test_response2 = urllib2.urlopen(test_request2,timeout=20)
@@ -179,15 +179,27 @@ print test_response2.read()
 
 #print fanhao_html.decode('gb2312','ignore').encode('utf-8')
 
+def set_headers():
+    headers1 = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    headers2 = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.1) Gecko/20090624 Firefox/3.5'}
+    headers3 = {'User-Agent':'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1'}
+    headers4 = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
+    headers = [headers1,headers2,headers3,headers4]
+    return random.choice(headers)
+
 
 if __name__ == '__main__':
-    print '#'*40
-    print '# FanHao'
-    print '#'*40
+    print '='*40
+    print '='
+    print '= 搜立方'
+    print '='
+    print '= Coded by Hanson'
+    print '='*40
 
     enable_proxy = False
 
-    proxy_select = raw_input("Do you want to configure proxy?(Y/N):")
+    # Do you want to configure proxy 
+    proxy_select = raw_input("是否设置代理?(Y/N):")
     if proxy_select == 'Y' or proxy_select == 'y':
         enable_proxy = True
     else:
@@ -202,9 +214,10 @@ if __name__ == '__main__':
         print 'Current Proxy Address %s'%current_proxy.proxy_address
         print 'Current Proxy Location %s'%current_proxy.country
     
+    # Input title to search
     fanhao = raw_input("请输入想要搜索的番号或标题:")
 
-    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    start_time = time.time()
 
     cili_fanhaos = []
     try:
@@ -214,19 +227,19 @@ if __name__ == '__main__':
     
     btdb_fanhaos = []
     try:
-        btdb_fanhaos = btdb_parse(fanhao,proxy_headers)
+        btdb_fanhaos = btdb_parse(fanhao,set_headers())
     except Exception:
         pass
     
     btbook_fanhaos = [] 
     try:
-        btbook_fanhaos = btbook_parse(fanhao,proxy_headers)
+        btbook_fanhaos = btbook_parse(fanhao,set_headers())
     except Exception:
         pass
     
     btcherry_fanhaos = []
     try:
-        btcherry_fanhaos = btcherry_parse(fanhao,proxy_headers)
+        btcherry_fanhaos = btcherry_parse(fanhao,set_headers())
     except Exception:
         pass
 
@@ -236,3 +249,6 @@ if __name__ == '__main__':
     
     print_result(fanhaos)
 
+    finish_time = time.time()
+    elapsed = finish_time - start_time
+    print '耗时:%s 秒'%elapsed
