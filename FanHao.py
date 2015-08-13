@@ -12,13 +12,12 @@ from Class import FanHao
 
 
 
-def cili_parse(fanhao):
-    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+def cili_parse(fanhao,proxy_headers):
+    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
     fanhao_url = 'http://www.cili.tv/search/'+urllib.quote(fanhao)+'_ctime_1.html'
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
     fanhao_html = response.read()
-    print fanhao_html
 
     soup = BeautifulSoup(fanhao_html)
     soup_items = soup.find_all("div",attrs={"class":"item"})
@@ -38,8 +37,8 @@ def cili_parse(fanhao):
         
         return fanhaos
 
-def btdb_parse(fanhao):
-    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+def btdb_parse(fanhao,proxy_headers):
+    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
     fanhao_url = 'http://btdb.in/q/%s/'%fanhao
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
@@ -62,9 +61,9 @@ def btdb_parse(fanhao):
             fanhaos.append(fanhao)
         return fanhaos
 
-def btbook_parse(fanhao):
-    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
-    fanhao_url = 'http://www.btbook.net/search/%s.html'%fanhao
+def btbook_parse(fanhao,proxy_headers):
+    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    fanhao_url = 'http://www.btbook.net/search/'+urllib.quote(fanhao)+'.html'
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
     fanhao_html = response.read()
@@ -85,12 +84,13 @@ def btbook_parse(fanhao):
             fanhaos.append(fanhao)
         return fanhaos
 
-def btcherry_parse(fanhao):
-    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
-    fanhao_url = 'http://www.btcherry.net/search?keyword=%s'%fanhao
+def btcherry_parse(fanhao,proxy_headers):
+    #proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    fanhao_url = 'http://www.btcherry.net/search?keyword='+urllib.quote(fanhao)
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
     fanhao_html = response.read()
+    print fahao_html
 
     soup = BeautifulSoup(fanhao_html)
     soup_items = soup.find_all("div",attrs={"class":"r"})
@@ -124,8 +124,6 @@ def btcherry_parse(fanhao):
                 magnet_url = item.find("div").find("a").get("href")
             except Exception:
                 pass
-
-
 
             resource = 'BTCherry'
             resource_url = 'http://www.btcherry.net'
@@ -204,19 +202,35 @@ if __name__ == '__main__':
         print 'Current Proxy Address %s'%current_proxy.proxy_address
         print 'Current Proxy Location %s'%current_proxy.country
     
-    fanhao = raw_input("请输入想要查找的番号:")
+    fanhao = raw_input("请输入想要搜索的番号或标题:")
+
+    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
 
     cili_fanhaos = []
-    cili_fanhaos = cili_parse(fanhao)
-    #btdb_fanhaos = []
-    #btdb_fanhaos = btdb_parse(fanhao)
-    #btbook_fanhaos = [] 
-    #btbook_fanhaos = btbook_parse(fanhao)
-    #btcherry_fanhaos = []
-    #btcherry_fanhaos = btcherry_parse(fanhao)
-    fanhaos = cili_fanhaos
+    try:
+        cili_fanhaos = cili_parse(fanhao,proxy_headers)
+    except Exception:
+        pass
+    
+    btdb_fanhaos = []
+    try:
+        btdb_fanhaos = btdb_parse(fanhao,proxy_headers)
+    except Exception:
+        pass
+    
+    btbook_fanhaos = [] 
+    try:
+        btbook_fanhaos = btbook_parse(fanhao,proxy_headers)
+    except Exception:
+        pass
+    
+    btcherry_fanhaos = []
+    try:
+        btcherry_fanhaos = btcherry_parse(fanhao,proxy_headers)
+    except Exception:
+        pass
 
-    #fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
+    fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
     # Sorting bt descending
     fanhaos.sort(key=lambda fanhao:fanhao.downloading_count,reverse=True)
     
