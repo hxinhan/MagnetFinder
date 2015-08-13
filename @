@@ -194,61 +194,6 @@ def set_headers():
     headers = [headers1,headers2,headers3,headers4]
     return random.choice(headers)
 
-def create_url(fanhaos):
-    fanhao_html = open("Index.html","r").read()
-    soup = BeautifulSoup(fanhao_html)
-    fanhao_tbody_html = soup.find("tbody")
-    for index,fanhao in enumerate(fanhaos):
-        tr_tag = soup.new_tag('tr')
-        fanhao_tbody_html.insert(0,tr_tag)
-        
-        fanhao_tbody_tr = fanhao_tbody_html.find('tr')
-        th_tag = soup.new_tag('th')
-        th_tag.string = str(index)
-        fanhao_tbody_tr.insert(0,th_tag)
-        
-        title_tag = soup.new_tag('td')
-        title_tag.string = fanhao.title
-        fanhao_tbody_tr.insert(1,title_tag)
-        
-        file_size_tag = soup.new_tag('td')
-        file_size_tag.string = fanhao.file_size
-        fanhao_tbody_tr.insert(2,file_size_tag)
-        
-        downloading_count_tag = soup.new_tag('td')
-        downloading_count_tag.string = str(fanhao.downloading_count)
-        fanhao_tbody_tr.insert(3,downloading_count_tag)
-
-        file_number_tag = soup.new_tag('td')
-        if fanhao.file_number:
-            file_number_tag.string = str(fanhao.file_number)
-        else:
-            file_number_tag.string = '--'
-        fanhao_tbody_tr.insert(4,file_number_tag)
-        
-        magnet_url_tag = soup.new_tag('td')
-        magnet_url_tag['class'] = 'magnet'
-        fanhao_tbody_tr.insert(5,magnet_url_tag)
-        fanhao_magnet_td = fanhao_tbody_tr.find('td',attrs={'class':'magnet'})
-        magnet_url_a = soup.new_tag('a',href=fanhao.magnet_url)
-        magnet_url_a.string = fanhao.magnet_url
-        fanhao_magnet_td.insert(0,magnet_url_a)
-
-        resource_tag = soup.new_tag('td')
-        resource_tag.string = fanhao.resource
-        fanhao_tbody_tr.insert(6,resource_tag)
-
-    #print(soup.prettify())
-    return soup
-
-def open_browser(soup):
-    new_html = file("New.html","wb")
-    new_html.write(str(soup))
-    new_html.close()
-    
-    html_url = 'file://'+os.getcwd()+'/New.html'
-    webbrowser.open(html_url,new=2)
-
 if __name__ == '__main__':
     print '*'*40
     print '*'
@@ -281,10 +226,10 @@ if __name__ == '__main__':
     fanhao = raw_input("请输入想要搜索的番号或标题:")
 
     start_time = time.time()
-    
+
     cili_fanhaos = []
     try:
-        cili_fanhaos = cili_parse(fanhao,set_headers())
+        cili_fanhaos = cili_parse(fanhao,proxy_headers)
     except Exception:
         pass
     
@@ -315,7 +260,58 @@ if __name__ == '__main__':
     finish_time = time.time()
     elapsed = finish_time - start_time
     print '耗时:%s 秒'%elapsed
+    
 
-    soup = create_url(fanhaos)
-    open_browser(soup)
+    fanhao_html = open("Index.html","r").read()
+    soup = BeautifulSoup(fanhao_html)
+    fanhao_tbody_html = soup.find("tbody")
+    for index,fanhao in enumerate(fanhaos):
+        tr_tag = soup.new_tag('tr')
+        fanhao_tbody_html.insert(0,tr_tag)
+        
+        fanhao_tbody_tr = fanhao_tbody_html.find('tr')
+        th_tag = soup.new_tag('th')
+        th_tag.string = str(index)
+        fanhao_tbody_tr.insert(0,th_tag)
+        
+        title_tag = soup.new_tag('td')
+        title_tag.string = fanhao.title
+        fanhao_tbody_tr.insert(1,title_tag)
+        
+        file_size_tag = soup.new_tag('td')
+        file_size_tag.string = fanhao.file_size
+        fanhao_tbody_tr.insert(2,file_size_tag)
+        
+        downloading_count_tag = soup.new_tag('td')
+        downloading_count_tag.string = str(fanhao.downloading_count)
+        fanhao_tbody_tr.insert(3,downloading_count_tag)
 
+        file_number_tag = soup.new_tag('td')
+        if fanhao.file_number:
+            file_number_tag.string = str(fanhao.file_number)
+        else:
+            file_number_tag.string = '--'
+        fanhao_tbody_tr.insert(4,file_number_tag)
+
+        
+        magnet_url_tag = soup.new_tag('td')
+        magnet_url_tag['class'] = 'magnet'
+        #magnet_url_tag.string = fanhao.magnet_url
+        #fanhao_tbody_tr.insert(5,magnet_url_tag)
+        fanhao_magnet_td = fanhao_tbody_tr.find('td',attrs={'class':'magnet'})
+        magnet_url_a = soup.new_tag('a')
+        fanhao_magnet_td.insert(0,magnet_url_a)
+        fanhao_tbody_tr.insert(5,magnet_url_tag)
+
+        resource_tag = soup.new_tag('td')
+        resource_tag.string = fanhao.resource
+        fanhao_tbody_tr.insert(6,resource_tag)
+
+    #print(soup.prettify())
+
+    new_html = file("New.html","wb")
+    new_html.write(str(soup))
+    new_html.close()
+    
+    html_url = 'file://'+os.getcwd()+'/New.html'
+    webbrowser.open(html_url,new=2)
