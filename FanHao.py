@@ -115,31 +115,13 @@ def btcherry_parse(fanhao,proxy_headers):
         for item in soup_items:
             try:
                 title = item.find("h5",attrs={"class":"h"}).text
-            except Exception:
-                pass
-            try:
-                info = item.find("div").find_all("span")
-                file_size = info[2].find("span",attrs={"class":"prop_val"}).text
-            except Exception:
-                pass
-            try:
-                file_number = info[4].find("span",attrs={"class":"prop_val"}).text
-            except Exception:
-                pass
-            try:
-                magnet_url = item.find("div").find("a").get("href")
-            except Exception:
-                pass
-            '''
-            try:
-                title = item.find("h5",attrs={"class":"h"}).text
                 info = item.find("div").find_all("span")
                 file_size = info[2].find("span",attrs={"class":"prop_val"}).text
                 file_number = int(info[4].find("span",attrs={"class":"prop_val"}).text)
                 magnet_url = item.find("div").find("a").get("href")
             except Exception:
                 pass
-            '''
+             
             resource = 'BTCherry'
             resource_url = 'http://www.btcherry.net'
             fanhao = FanHao(title,file_size,None,file_number,magnet_url,resource,resource_url)
@@ -157,7 +139,7 @@ def print_result(fanhaos):
             else:
                 print u'热度:--'
             if fanhao.file_number:
-                print u'文件数:%d'%fanhao.file_number
+                print u'文件数:%s'%str(fanhao.file_number)
             else:
                 print u'文件数:--'
             print u'磁力链接:'+fanhao.magnet_url
@@ -172,15 +154,6 @@ test_headers = {'Host':'www.torrentkitty.org','Connection':'keep-alive','Cache-C
 
 fanhao_url = 'http://www.torrentkitty.org/search/SNIS-338/'
 #fanhao_url = 'http://www.torrentkitty.org/css/font.css'
-
-cookie = cookielib.CookieJar()
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-req = urllib2.Request(fanhao_url,headers=test_headers)
-result = opener.open(req)
-#print result.read()
-for item in cookie:
-    print 'Name = '+item.name
-    print 'Value = '+item.value
 '''
 #print fanhao_html.decode('gb2312','ignore').encode('utf-8')
 
@@ -216,7 +189,10 @@ def create_url(fanhaos):
         fanhao_tbody_tr.insert(2,file_size_tag)
         
         downloading_count_tag = soup.new_tag('td')
-        downloading_count_tag.string = str(fanhao.downloading_count)
+        if fanhao.downloading_count:
+            downloading_count_tag.string = str(fanhao.downloading_count)
+        else:
+            downloading_count_tag.string = '--'
         fanhao_tbody_tr.insert(3,downloading_count_tag)
 
         file_number_tag = soup.new_tag('td')
