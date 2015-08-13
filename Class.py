@@ -9,10 +9,11 @@ class ProxyServer:
         self.country=country
 
 class FanHao:
-    def __init__(self,title,file_size,downloading_count,magnet_url,resource,resource_url):
+    def __init__(self,title,file_size,downloading_count,file_number,magnet_url,resource,resource_url):
         self.title = title
         self.file_size = file_size
         self.downloading_count = downloading_count
+        self.file_number = file_number
         self.magnet_url = magnet_url
         self.resource = resource
         self.resource_url = resource_url

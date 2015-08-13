@@ -14,10 +14,11 @@ from Class import FanHao
 
 def cili_parse(fanhao):
     proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
-    fanhao_url = 'http://www.cili.tv/search/'+fanhao+'_ctime_1.html'
+    fanhao_url = 'http://www.cili.tv/search/'+urllib.quote(fanhao)+'_ctime_1.html'
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
     fanhao_html = response.read()
+    print fanhao_html
 
     soup = BeautifulSoup(fanhao_html)
     soup_items = soup.find_all("div",attrs={"class":"item"})
@@ -32,7 +33,7 @@ def cili_parse(fanhao):
             magnet_url = str(spans[3].find("a").get('href'))
             resource = 'Cili'
             resource_url = 'http://www.cili.tv'
-            fanhao = FanHao(title,file_size,downloading_count,magnet_url,resource,resource_url)
+            fanhao = FanHao(title,file_size,downloading_count,None,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
         
         return fanhaos
@@ -53,10 +54,82 @@ def btdb_parse(fanhao):
             info = item.find("div",attrs={"class":"item-meta-info"}).find_all("span",attrs={"class":"item-meta-info-value"})
             file_size = info[0].text
             downloading_count = int(info[-1].text)
+            file_number = int(info[1].text)
             magnet_url = item.find("div",attrs={"class":"item-meta-info"}).find("a",attrs={"class":"magnet"}).get("href")
             resource = 'BTDB'
             resource_url = 'http://btdb.in'
-            fanhao = FanHao(title,file_size,downloading_count,magnet_url,resource,resource_url)
+            fanhao = FanHao(title,file_size,downloading_count,file_number,magnet_url,resource,resource_url)
+            fanhaos.append(fanhao)
+        return fanhaos
+
+def btbook_parse(fanhao):
+    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    fanhao_url = 'http://www.btbook.net/search/%s.html'%fanhao
+    proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+    response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
+    fanhao_html = response.read()
+
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find_all("div",attrs={"class":"search-item"})
+    if soup_items:
+        fanhaos = []
+        for item in soup_items:
+            title = item.find("h3").find("a").find("b").text
+            info = item.find("div",attrs={"class":"item-bar"}).find_all("span")
+            file_size = info[2].b.text
+            downloading_count = int(info[3].b.text)
+            magnet_url = item.find("div",attrs={"class":"item-bar"}).find("a").get("href")
+            resource = 'Btbook'
+            resource_url = 'http://www.btbook.net'
+            fanhao = FanHao(title,file_size,downloading_count,None,magnet_url,resource,resource_url)
+            fanhaos.append(fanhao)
+        return fanhaos
+
+def btcherry_parse(fanhao):
+    proxy_headers = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6','Accept':'text/html;q=0.9,*/*;q=0.8','Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.3'}
+    fanhao_url = 'http://www.btcherry.net/search?keyword=%s'%fanhao
+    proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+    response = urllib2.urlopen(proxy_request,timeout=20) #timeout=10
+    fanhao_html = response.read()
+
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find_all("div",attrs={"class":"r"})
+    if soup_items:
+        fanhaos = []
+        for item in soup_items:
+            '''
+            try:
+                title = item.find("h5",attrs={"class":"h"}).text
+            except Exception:
+                pass
+            try:
+                info = item.find("div").find_all("span")
+                file_size = info[2].find("span",attrs={"class":"prop_val"}).text
+            except Exception:
+                pass
+            try:
+                file_number = info[4].find("span",attrs={"class":"prop_val"}).text
+            except Exception:
+                pass
+            try:
+                magnet_url = item.find("div").find("a").get("href")
+            except Exception:
+                pass
+            '''
+            try:
+                title = item.find("h5",attrs={"class":"h"}).text
+                info = item.find("div").find_all("span")
+                file_size = info[2].find("span",attrs={"class":"prop_val"}).text
+                file_number = int(info[4].find("span",attrs={"class":"prop_val"}).text)
+                magnet_url = item.find("div").find("a").get("href")
+            except Exception:
+                pass
+
+
+
+            resource = 'BTCherry'
+            resource_url = 'http://www.btcherry.net'
+            fanhao = FanHao(title,file_size,None,file_number,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
         return fanhaos
 
@@ -66,7 +139,14 @@ def print_result(fanhaos):
         for fanhao in fanhaos:
             print u'名称:'+fanhao.title
             print u'文件大小:'+fanhao.file_size
-            print u'热度:%d'%fanhao.downloading_count
+            if fanhao.downloading_count:
+                print u'热度:%d'%fanhao.downloading_count
+            else:
+                print u'热度:--'
+            if fanhao.file_number:
+                print u'文件数:%d'%fanhao.file_number
+            else:
+                print u'文件数:--'
             print u'磁力链接:'+fanhao.magnet_url
             print u'来源:'+fanhao.resource
             print '-'*40
@@ -128,12 +208,17 @@ if __name__ == '__main__':
 
     cili_fanhaos = []
     cili_fanhaos = cili_parse(fanhao)
-    btdb_fanhaos = []
-    btdb_fanhaos = btdb_parse(fanhao)
+    #btdb_fanhaos = []
+    #btdb_fanhaos = btdb_parse(fanhao)
+    #btbook_fanhaos = [] 
+    #btbook_fanhaos = btbook_parse(fanhao)
+    #btcherry_fanhaos = []
+    #btcherry_fanhaos = btcherry_parse(fanhao)
+    fanhaos = cili_fanhaos
 
-    fanhaos = btdb_fanhaos+cili_fanhaos
+    #fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
     # Sorting bt descending
     fanhaos.sort(key=lambda fanhao:fanhao.downloading_count,reverse=True)
-    #print_result(btdb_fanhaos)
+    
     print_result(fanhaos)
 
