@@ -263,4 +263,3 @@ if __name__ == '__main__':
 
     html_url = 'file://'+os.getcwd()+'/Index.html'
     webbrowser.open(html_url,new=2)
-
