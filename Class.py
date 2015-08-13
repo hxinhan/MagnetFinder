@@ -16,3 +16,5 @@ class FanHao:
         self.magnet_url = magnet_url
         self.resource = resource
         self.resource_url = resource_url
+    #def __repr__(self):
+    #    return repr((self.title,self.file_size,self.downloading_count,self.magnet_url,self.resource,self.resource_url))

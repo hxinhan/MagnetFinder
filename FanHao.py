@@ -28,7 +28,7 @@ def cili_parse(fanhao):
             info = item.find("div",attrs={"class":"info"}) 
             spans = info.find_all("span")
             file_size = str(spans[1].b.text)
-            downloading_count = str(spans[2].b.string)
+            downloading_count = int(str(spans[2].b.string))
             magnet_url = str(spans[3].find("a").get('href'))
             resource = 'Cili'
             resource_url = 'http://www.cili.tv'
@@ -52,7 +52,7 @@ def btdb_parse(fanhao):
             title = item.find("h1").find("a").get("title")
             info = item.find("div",attrs={"class":"item-meta-info"}).find_all("span",attrs={"class":"item-meta-info-value"})
             file_size = info[0].text
-            downloading_count = info[-1].text
+            downloading_count = int(info[-1].text)
             magnet_url = item.find("div",attrs={"class":"item-meta-info"}).find("a",attrs={"class":"magnet"}).get("href")
             resource = 'BTDB'
             resource_url = 'http://btdb.in'
@@ -66,7 +66,7 @@ def print_result(fanhaos):
         for fanhao in fanhaos:
             print u'名称:'+fanhao.title
             print u'文件大小:'+fanhao.file_size
-            print u'热度:'+fanhao.downloading_count
+            print u'热度:%d'%fanhao.downloading_count
             print u'磁力链接:'+fanhao.magnet_url
             print u'来源:'+fanhao.resource
             print '-'*40
@@ -126,11 +126,14 @@ if __name__ == '__main__':
     
     fanhao = raw_input("请输入想要查找的番号:")
 
-    #cili_fanhaos = []
-    #cili_fanhaos = cili_parse(fanhao)
+    cili_fanhaos = []
+    cili_fanhaos = cili_parse(fanhao)
     btdb_fanhaos = []
-    btdb_fanhaos = btdb_parse(fanhao) 
-    #fanhaos = btdb_fanhaos.append(cili_fanhaos)
-    
-    print_result(btdb_fanhaos)
+    btdb_fanhaos = btdb_parse(fanhao)
+
+    fanhaos = btdb_fanhaos+cili_fanhaos
+    # Sorting bt descending
+    fanhaos.sort(key=lambda fanhao:fanhao.downloading_count,reverse=True)
+    #print_result(btdb_fanhaos)
+    print_result(fanhaos)
 
