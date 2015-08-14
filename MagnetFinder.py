@@ -271,38 +271,7 @@ if __name__ == '__main__':
     
         start_time = time.time()
         
-        '''
-        cili_fanhaos = []
-        try:
-            cili_fanhaos = cili_parse(fanhao,set_headers())
-        except Exception:
-            pass
-    
-        btdb_fanhaos = []
-        try:
-            btdb_fanhaos = btdb_parse(fanhao,set_headers())
-        except Exception:
-            pass
-    
-        btbook_fanhaos = [] 
-        try:
-            btbook_fanhaos = btbook_parse(fanhao,set_headers())
-        except Exception:
-            pass
-    
-        btcherry_fanhaos = []
-        try:
-            btcherry_fanhaos = btcherry_parse(fanhao,set_headers())
-        except Exception:
-            pass
-    
-        fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
-        # Sorting bt descending
-        fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
-        '''
-
         threads = []
-        
         
         btdb_thread = threading.Thread(target=btdb_parse,args=(fanhao,set_headers(),))
         threads.append(btdb_thread)
@@ -322,10 +291,6 @@ if __name__ == '__main__':
             t.start()
             t.join()
         
-        #print cili_fanhaos
-        #print btdb_fanhaos
-        #print btbook_fanhaos
-        #print btcherry_fanhaos
         fanhaos = btdb_fanhaos + btbook_fanhaos + cili_fanhaos + btcherry_fanhaos 
 
         # Sorting bt descending
