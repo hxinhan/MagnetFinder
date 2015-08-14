@@ -35,8 +35,7 @@ from Class import FanHao
 type = sys.getfilesystemencoding()
 
 def cili_parse(fanhao,proxy_headers):
-    fanhao_url = 'http://www.cili.tv/search/%s_ctime_1.html'%urllib.quote(fanhao.decode(sys.stdin.encoding)
-.encode('utf8'))
+    fanhao_url = 'http://www.cili.tv/search/%s_ctime_1.html'%urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))
     proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
     response = urllib2.urlopen(proxy_request,timeout=20)
     fanhao_html = response.read()
@@ -56,8 +55,9 @@ def cili_parse(fanhao,proxy_headers):
             resource_url = 'http://www.cili.tv'
             fanhao = FanHao(title,file_size,downloading_count,None,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
-        
         return fanhaos
+    else:
+        return []
 
 def btdb_parse(fanhao,proxy_headers):
     fanhao_url = 'http://btdb.in/q/%s/'%urllib.quote(fanhao.decode(sys.stdin.encoding)
@@ -82,6 +82,8 @@ def btdb_parse(fanhao,proxy_headers):
             fanhao = FanHao(title,file_size,downloading_count,file_number,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
         return fanhaos
+    else:
+        return []
 
 def btbook_parse(fanhao,proxy_headers):
     fanhao_url = 'http://www.btbook.net/search/'+urllib.quote(fanhao.decode(sys.stdin.encoding)
@@ -105,6 +107,8 @@ def btbook_parse(fanhao,proxy_headers):
             fanhao = FanHao(title,file_size,downloading_count,None,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
         return fanhaos
+    else:
+        return []
 
 def btcherry_parse(fanhao,proxy_headers):
     fanhao_url = 'http://www.btcherry.net/search?keyword='+urllib.quote(fanhao.decode(sys.stdin.encoding)
@@ -132,6 +136,8 @@ def btcherry_parse(fanhao,proxy_headers):
             fanhao = FanHao(title,file_size,None,file_number,magnet_url,resource,resource_url)
             fanhaos.append(fanhao)
         return fanhaos
+    else:
+        return []
 
 def print_result(fanhaos):
     
@@ -170,13 +176,11 @@ def create_url(fanhaos):
     fanhao_tbody_html = soup.find("tbody")
     for index,fanhao in enumerate(fanhaos):
         tr_tag = soup.new_tag('tr')
-        index = int(index)
-        length = len(fanhaos)
         fanhao_tbody_html.insert(0,tr_tag)
         
         fanhao_tbody_tr = fanhao_tbody_html.find('tr')
         th_tag = soup.new_tag('th')
-        th_tag.string = str(index)
+        th_tag.string = str(index+1)
         fanhao_tbody_tr.insert(0,th_tag)
         
         title_tag = soup.new_tag('td')
@@ -281,6 +285,7 @@ if __name__ == '__main__':
     except Exception:
         pass
     
+
     fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
     # Sorting bt descending
     fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
