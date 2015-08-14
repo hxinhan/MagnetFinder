@@ -143,19 +143,22 @@ def print_result(fanhaos):
     
     if fanhaos:
         for fanhao in fanhaos:
-            print u'名称:'+fanhao.title
-            print u'文件大小:'+fanhao.file_size
-            if fanhao.downloading_count:
-                print u'热度:%d'%fanhao.downloading_count
-            else:
-                print u'热度:--'
-            if fanhao.file_number:
-                print u'文件数:%s'%str(fanhao.file_number)
-            else:
-                print u'文件数:--'
-            print u'磁力链接:'+fanhao.magnet_url
-            print u'来源:'+fanhao.resource
-            print '-'*40
+            try:
+                print u'名称:%s'%fanhao.title
+                print u'文件大小:%s'%fanhao.file_size
+                if fanhao.downloading_count:
+                    print u'热度:%d'%fanhao.downloading_count
+                else:
+                    print u'热度:--'
+                if fanhao.file_number:
+                    print u'文件数:%s'%str(fanhao.file_number)
+                else:
+                    print u'文件数:--'
+                print u'磁力链接:%s'%fanhao.magnet_url
+                print u'来源:%s'%fanhao.resource
+                print '-'*40
+            except Exception:
+                pass
         print u'资源数:%d个'%len(fanhaos)
     else:
         print u'抱歉未找到相关资源！'
@@ -255,47 +258,46 @@ if __name__ == '__main__':
             proxy_configured = proxy_test(proxy_configured)
         print 'Current Proxy Address %s'%current_proxy.proxy_address
         print 'Current Proxy Location %s'%current_proxy.country
-     
-    # Input title to search
-    fanhao = raw_input(unicode('请输入想要搜索的番号或标题:','utf-8').encode(type))
     
-    start_time = time.time()
+    while True:
+        # Input title to search
+        fanhao = raw_input(unicode('请输入想要搜索的番号或标题:','utf-8').encode(type))
     
-    cili_fanhaos = []
-    try:
-        cili_fanhaos = cili_parse(fanhao,set_headers())
-    except Exception:
-        pass
+        start_time = time.time()
     
-    btdb_fanhaos = []
-    try:
-        btdb_fanhaos = btdb_parse(fanhao,set_headers())
-    except Exception:
-        pass
+        cili_fanhaos = []
+        try:
+            cili_fanhaos = cili_parse(fanhao,set_headers())
+        except Exception:
+            pass
     
-    btbook_fanhaos = [] 
-    try:
-        btbook_fanhaos = btbook_parse(fanhao,set_headers())
-    except Exception:
-        pass
+        btdb_fanhaos = []
+        try:
+            btdb_fanhaos = btdb_parse(fanhao,set_headers())
+        except Exception:
+            pass
     
-    btcherry_fanhaos = []
-    try:
-        btcherry_fanhaos = btcherry_parse(fanhao,set_headers())
-    except Exception:
-        pass
+        btbook_fanhaos = [] 
+        try:
+            btbook_fanhaos = btbook_parse(fanhao,set_headers())
+        except Exception:
+            pass
     
+        btcherry_fanhaos = []
+        try:
+            btcherry_fanhaos = btcherry_parse(fanhao,set_headers())
+        except Exception:
+            pass
+    
+        fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
+        # Sorting bt descending
+        fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
+    
+        print_result(fanhaos)
 
-    fanhaos = btdb_fanhaos+cili_fanhaos+btbook_fanhaos+btcherry_fanhaos
-    # Sorting bt descending
-    fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
-    
-    print_result(fanhaos)
+        finish_time = time.time()
+        elapsed = finish_time - start_time
+        print u'耗时:%s 秒'%elapsed
 
-    finish_time = time.time()
-    elapsed = finish_time - start_time
-    print u'耗时:%s 秒'%elapsed
-
-    soup = create_url(fanhaos)
-    open_browser(soup)
-
+        soup = create_url(fanhaos)
+        open_browser(soup)
