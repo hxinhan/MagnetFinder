@@ -67,7 +67,7 @@ def btdb_parse(fanhao,proxy_headers):
     try:
         fanhao_url = 'http://btdb.in/q/%s/'%urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))
         proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
-        response = urllib2.urlopen(proxy_request,timeout=20)
+        response = urllib2.urlopen(proxy_request,timeout=10)
         fanhao_html = response.read()
     except Exception:
         return btdb_fanhaos
@@ -94,7 +94,7 @@ def btbook_parse(fanhao,proxy_headers):
     try:
         fanhao_url = 'http://www.btbook.net/search/'+urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))+'.html'
         proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
-        response = urllib2.urlopen(proxy_request,timeout=20)
+        response = urllib2.urlopen(proxy_request,timeout=10)
         fanhao_html = response.read()
     except Exception:
         return btbook_fanhaos
@@ -121,7 +121,7 @@ def btcherry_parse(fanhao,proxy_headers):
         fanhao_url = 'http://www.btcherry.net/search?keyword='+urllib.quote(fanhao.decode(sys.stdin.encoding)
 .encode('utf8'))
         proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
-        response = urllib2.urlopen(proxy_request,timeout=20)
+        response = urllib2.urlopen(proxy_request,timeout=10)
         fanhao_html = response.read()
     except Exception:
         return btcherry_fanhaos
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     while True:
         # Input title to search
         fanhao = raw_input(unicode('请输入想要搜索的番号或标题:','utf-8').encode(type))
-    
+        # Counting time start point 
         start_time = time.time()
         
         threads = []
@@ -285,10 +285,13 @@ if __name__ == '__main__':
         btcherry_thread = threading.Thread(target=btcherry_parse,args=(fanhao,set_headers(),))
         threads.append(btcherry_thread)
         
+        
         for t in threads:
-            print u'查找中...'
-            t.setDaemon(True)
+            #print u'查找中...'
+            #t.setDaemon(True)
             t.start()
+        
+        for t in threads:
             t.join()
         
         fanhaos = btdb_fanhaos + btbook_fanhaos + cili_fanhaos + btcherry_fanhaos 
@@ -297,7 +300,8 @@ if __name__ == '__main__':
         fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
         
         print_result(fanhaos)
-
+        
+        # Counting time end point
         finish_time = time.time()
         elapsed = finish_time - start_time
         print u'耗时:%s 秒'%elapsed
