@@ -223,11 +223,11 @@ def create_url(fanhaos):
     return soup
 
 def open_browser(soup):
-    new_html = file("New.html","wb")
+    new_html = file("MagnetFinder.html","wb")
     new_html.write(str(soup))
     new_html.close()
     
-    html_url = 'file://'+os.getcwd()+'/New.html'
+    html_url = 'file://'+os.getcwd()+'/MagnetFinder.html'
     webbrowser.open(html_url,new=2)
 
 if __name__ == '__main__':
