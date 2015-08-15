@@ -31,8 +31,6 @@ from Proxy import proxy_setting
 from Proxy import proxy_test
 from bs4 import BeautifulSoup
 from Class import FanHao
-#from Module import btku_parse
-import Module
 
 type = sys.getfilesystemencoding()
 
@@ -231,8 +229,37 @@ def btku_parse(fanhao,proxy_headers):
             btku_fanhaos.append(fanhao)
     return btku_fanhaos
 
-def print_result(fanhaos):
+def Qululu_parse(fanhao,proxy_headers):
+    global Qululu_fanhaos
+    Qululu_fanhaos = []
+   
+    try:
+        fanhao_url = 'http://www.qululu.cn/search1/b/%s/1/hot_d'%fanhao.decode(sys.stdin.encoding).encode('utf8').encode('hex')
+        proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+        response = urllib2.urlopen(proxy_request,timeout=10)
+        fanhao_html = response.read()
+    except Exception:
+        return Qululu_fanhaos
     
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find("ul",attrs={"class":"mlist"}).find_all("li")
+    if soup_items:
+        for item in soup_items:
+            title = item.find("div",attrs={"class":"T1"}).find("a").string
+            title = re.sub('<span class="mhl">','',re.sub('</span>','',title.decode('hex')))
+            info = item.find("dl",attrs={"class":"BotInfo"}).find("dt").find_all("span")
+            file_size = info[0].string.replace(' ','')
+            file_number = int(info[1].string)
+            downloading_count = int(info[3].string)
+            magnet_url = item.find("div",attrs={"class":"dInfo"}).find("a").get('href')
+            resource = 'Qululu'
+            resource_url = 'http://www.qululu.cn'
+            fanhao = FanHao(title,file_size,downloading_count,file_number,magnet_url,resource,resource_url)
+            Qululu_fanhaos.append(fanhao)
+    return Qululu_fanhaos
+
+
+def print_result(fanhaos):
     if fanhaos:
         for fanhao in fanhaos:
             try:
@@ -287,14 +314,14 @@ def create_url(fanhaos):
         fanhao_tbody_tr.insert(2,file_size_tag)
         
         downloading_count_tag = soup.new_tag('td')
-        if fanhao.downloading_count:
+        if fanhao.downloading_count is not None:
             downloading_count_tag.string = str(fanhao.downloading_count)
         else:
             downloading_count_tag.string = '--'
         fanhao_tbody_tr.insert(3,downloading_count_tag)
 
         file_number_tag = soup.new_tag('td')
-        if fanhao.file_number:
+        if fanhao.file_number is not None:
             file_number_tag.string = str(fanhao.file_number)
         else:
             file_number_tag.string = '--'
@@ -361,7 +388,7 @@ if __name__ == '__main__':
         start_time = time.time()
         
         threads = []
-        '''
+        
         btdb_thread = threading.Thread(target=btdb_parse,args=(fanhao,set_headers(),))
         threads.append(btdb_thread)
         
@@ -379,18 +406,22 @@ if __name__ == '__main__':
         
         micili_thread = threading.Thread(target=micili_parse,args=(fanhao,set_headers(),))
         threads.append(micili_thread)
-        '''
+        
         btku_thread = threading.Thread(target=btku_parse,args=(fanhao,set_headers(),))
         threads.append(btku_thread)
-        
+
+        Qululu_thread = threading.Thread(target=Qululu_parse,args=(fanhao,set_headers(),))
+        threads.append(Qululu_thread)
+
+
         for t in threads:
             t.start()
         
         for t in threads:
             t.join()
         
-        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos+btku_fanhaos 
-        #fanhaos = btku_fanhaos 
+        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos+btku_fanhaos+Qululu_fanhaos 
+        #fanhaos = Qululu_fanhaos 
 
         # Sorting bt descending
         fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
