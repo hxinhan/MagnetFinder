@@ -172,6 +172,34 @@ def zhongziIn_parse(fanhao,proxy_headers):
             zhongziIn_fanhaos.append(fanhao)
     return zhongziIn_fanhaos
     
+def micili_parse(fanhao,proxy_headers):
+    global micili_fanhaos
+    micili_fanhaos = []
+   
+    try:
+        fanhao_url = 'http://www.micili.com/list/'+urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))+'/?c=&s=create_time'
+        proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+        response = urllib2.urlopen(proxy_request,timeout=10)
+        fanhao_html = response.read()
+    except Exception:
+        return micili_fanhaos
+    
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find("ul",attrs={"class":"collection z-depth-1"}).find_all("li")
+
+    if soup_items:
+        for item in soup_items:
+            title = item.find("h6").find("a").get('title')
+            info = item.find("span",attrs={"class":"mt10"})
+            file_number=int(info.text.split(':')[1].split(u'大小')[0].strip())
+            file_size=info.text.split(':')[2].split(u'请求数')[0].strip()
+            downloading_count=int(info.text.split(u'请求数:')[1].split(u'磁力链接')[0].strip())
+            magnet_url = info.find("a").get('href')
+            resource = 'micili'
+            resource_url = 'http://www.micili.com'
+            fanhao = FanHao(title,file_size,downloading_count,file_number,magnet_url,resource,resource_url)
+            micili_fanhaos.append(fanhao)
+    return micili_fanhaos
 
 def print_result(fanhaos):
     
@@ -316,14 +344,17 @@ if __name__ == '__main__':
         zhongziIn_thread = threading.Thread(target=zhongziIn_parse,args=(fanhao,set_headers(),))
         threads.append(zhongziIn_thread)
         
+        micili_thread = threading.Thread(target=micili_parse,args=(fanhao,set_headers(),))
+        threads.append(micili_thread)
+        
         for t in threads:
             t.start()
         
         for t in threads:
             t.join()
         
-        fanhaos = btdb_fanhaos + btbook_fanhaos + cili_fanhaos + btcherry_fanhaos + zhongziIn_fanhaos 
-        #fanhaos =  zhongziIn_fanhaos 
+        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos 
+        #fanhaos =  micili_fanhaos 
 
         # Sorting bt descending
         fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
