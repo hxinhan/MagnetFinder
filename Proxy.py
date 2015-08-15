@@ -7,6 +7,7 @@ def proxy_test(proxy_configured):
     print 'Proxy Testing...'
     test_headers = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
     test_url = 'http://www.google.com'
+    #test_url = 'http://www.btcherry.net'
     #test_url2 = 'http://www.whereisip.net/'
     test_request = urllib2.Request(test_url,headers=test_headers)
     try:

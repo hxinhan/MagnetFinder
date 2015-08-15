@@ -117,15 +117,15 @@ def btbook_parse(fanhao,proxy_headers):
 def btcherry_parse(fanhao,proxy_headers):
     global btcherry_fanhaos
     btcherry_fanhaos = []
+   
     try:
-        fanhao_url = 'http://www.btcherry.net/search?keyword='+urllib.quote(fanhao.decode(sys.stdin.encoding)
-.encode('utf8'))
+        fanhao_url = 'http://www.btcherry.net/search?keyword='+urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))
         proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
         response = urllib2.urlopen(proxy_request,timeout=10)
         fanhao_html = response.read()
     except Exception:
         return btcherry_fanhaos
-
+    
     soup = BeautifulSoup(fanhao_html)
     soup_items = soup.find_all("div",attrs={"class":"r"})
     if soup_items:
@@ -144,6 +144,34 @@ def btcherry_parse(fanhao,proxy_headers):
             fanhao = FanHao(title,file_size,None,file_number,magnet_url,resource,resource_url)
             btcherry_fanhaos.append(fanhao)
     return btcherry_fanhaos
+
+def zhongziIn_parse(fanhao,proxy_headers):
+    global zhongziIn_fanhaos
+    zhongziIn_fanhaos = []
+   
+    try:
+        fanhao_url = 'http://www.zhongzi.in/s/'+urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))
+        proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+        response = urllib2.urlopen(proxy_request,timeout=10)
+        fanhao_html = response.read()
+    except Exception:
+        return zhongziIn_fanhaos
+    
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find("div",attrs={"class":"wx_list"}).find_all("li")
+    
+    if soup_items:
+        for item in soup_items:
+            title = item.find("a").get('title')
+            info = item.find("span",attrs={"class":"j_size"})
+            file_size = info.text.split(":")[1] 
+            magnet_url = info.find("a").get('href') 
+            resource = 'zhongzi.in'
+            resource_url = 'http://www.zhongzi.in'
+            fanhao = FanHao(title,file_size,None,None,magnet_url,resource,resource_url)
+            zhongziIn_fanhaos.append(fanhao)
+    return zhongziIn_fanhaos
+    
 
 def print_result(fanhaos):
     
@@ -281,20 +309,21 @@ if __name__ == '__main__':
         
         cili_thread = threading.Thread(target=cili_parse,args=(fanhao,set_headers(),))
         threads.append(cili_thread)
-         
+        
         btcherry_thread = threading.Thread(target=btcherry_parse,args=(fanhao,set_headers(),))
         threads.append(btcherry_thread)
         
+        zhongziIn_thread = threading.Thread(target=zhongziIn_parse,args=(fanhao,set_headers(),))
+        threads.append(zhongziIn_thread)
         
         for t in threads:
-            #print u'查找中...'
-            #t.setDaemon(True)
             t.start()
         
         for t in threads:
             t.join()
         
-        fanhaos = btdb_fanhaos + btbook_fanhaos + cili_fanhaos + btcherry_fanhaos 
+        fanhaos = btdb_fanhaos + btbook_fanhaos + cili_fanhaos + btcherry_fanhaos + zhongziIn_fanhaos 
+        #fanhaos =  zhongziIn_fanhaos 
 
         # Sorting bt descending
         fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
