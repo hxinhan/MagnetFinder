@@ -272,10 +272,13 @@ def create_url(fanhaos):
         
         magnet_url_tag = soup.new_tag('td')
         magnet_url_tag['class'] = 'magnet'
+        #magnet_url_tag['style'] = 'max-width:100px;'
         fanhao_tbody_tr.insert(5,magnet_url_tag)
         fanhao_magnet_td = fanhao_tbody_tr.find('td',attrs={'class':'magnet'})
         magnet_url_a = soup.new_tag('a',href=fanhao.magnet_url)
-        magnet_url_a.string = fanhao.magnet_url
+        #magnet_url_a.string = fanhao.magnet_url
+        magnet_url_a.string = u'点击下载'
+        magnet_url_a['class'] = 'btn btn-success'
         fanhao_magnet_td.insert(0,magnet_url_a)
 
         resource_tag = soup.new_tag('td')
