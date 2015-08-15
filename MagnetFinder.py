@@ -31,6 +31,8 @@ from Proxy import proxy_setting
 from Proxy import proxy_test
 from bs4 import BeautifulSoup
 from Class import FanHao
+#from Module import btku_parse
+import Module
 
 type = sys.getfilesystemencoding()
 
@@ -201,6 +203,34 @@ def micili_parse(fanhao,proxy_headers):
             micili_fanhaos.append(fanhao)
     return micili_fanhaos
 
+def btku_parse(fanhao,proxy_headers):
+    global btku_fanhaos
+    btku_fanhaos = []
+   
+    try:
+        fanhao_url = 'http://www.btku.me/q/%s/'%urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))
+        proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+        response = urllib2.urlopen(proxy_request,timeout=10)
+        fanhao_html = response.read()
+    except Exception:
+        return btku_fanhaos
+    
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find("div",attrs={"id":"search_Results"}).find_all("li",attrs={"class":"results"})
+    if soup_items:
+        for item in soup_items:
+            title = item.find("h2").find("a").text
+            info = item.find("p",attrs={"class":"resultsIntroduction"})
+            file_number = int(info.find_all("label")[0].string)
+            file_size = info.find_all("label")[1].string
+            downloading_count = int(info.find_all("label")[2].string)
+            magnet_url = info.find("span",attrs={"class":"downLink"}).find_all("a")[1].get('href')
+            resource = 'BTKU'
+            resource_url = 'http://www.btku.me'
+            fanhao = FanHao(title,file_size,downloading_count,file_number,magnet_url,resource,resource_url)
+            btku_fanhaos.append(fanhao)
+    return btku_fanhaos
+
 def print_result(fanhaos):
     
     if fanhaos:
@@ -331,7 +361,7 @@ if __name__ == '__main__':
         start_time = time.time()
         
         threads = []
-        
+        '''
         btdb_thread = threading.Thread(target=btdb_parse,args=(fanhao,set_headers(),))
         threads.append(btdb_thread)
         
@@ -349,6 +379,9 @@ if __name__ == '__main__':
         
         micili_thread = threading.Thread(target=micili_parse,args=(fanhao,set_headers(),))
         threads.append(micili_thread)
+        '''
+        btku_thread = threading.Thread(target=btku_parse,args=(fanhao,set_headers(),))
+        threads.append(btku_thread)
         
         for t in threads:
             t.start()
@@ -356,8 +389,8 @@ if __name__ == '__main__':
         for t in threads:
             t.join()
         
-        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos 
-        #fanhaos =  micili_fanhaos 
+        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos+btku_fanhaos 
+        #fanhaos = btku_fanhaos 
 
         # Sorting bt descending
         fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
