@@ -258,6 +258,32 @@ def Qululu_parse(fanhao,proxy_headers):
             Qululu_fanhaos.append(fanhao)
     return Qululu_fanhaos
 
+def nimasou_parse(fanhao,proxy_headers):
+    global nimasou_fanhaos
+    nimasou_fanhaos = []
+   
+    try:
+        fanhao_url = 'http://www.nimasou.com/l/%s-hot-desc-1'%urllib.quote(fanhao.decode(sys.stdin.encoding).encode('utf8'))
+        proxy_request = urllib2.Request(fanhao_url,headers=proxy_headers)
+        response = urllib2.urlopen(proxy_request,timeout=10)
+        fanhao_html = response.read()
+    except Exception:
+        return nimasou_fanhaos
+    
+    soup = BeautifulSoup(fanhao_html)
+    soup_items = soup.find("table",attrs={"class":"table"}).find_all("tr")
+    if soup_items:
+        for item in soup_items:
+            title = item.find("td",attrs={"class":"x-item"}).find("a",attrs={"class":"title"}).text
+            info = item.find("td",attrs={"class":"x-item"}).find("div",attrs={"class":"tail"}).text.split(':')
+            file_size = info[2].split(' ')[1] + info[2].split(' ')[2]
+            downloading_count = int(info[3].split(' ')[1])
+            magnet_url = item.find("td",attrs={"class":"x-item"}).find("div",attrs={"class":"tail"}).find("a").get('href')
+            resource = 'NiMaSou'
+            resource_url = 'http://www.nimasou.com'
+            fanhao = FanHao(title,file_size,downloading_count,None,magnet_url,resource,resource_url)
+            nimasou_fanhaos.append(fanhao)
+    return nimasou_fanhaos
 
 def print_result(fanhaos):
     if fanhaos:
@@ -412,7 +438,9 @@ if __name__ == '__main__':
 
         Qululu_thread = threading.Thread(target=Qululu_parse,args=(fanhao,set_headers(),))
         threads.append(Qululu_thread)
-
+        
+        nimasou_thread = threading.Thread(target=nimasou_parse,args=(fanhao,set_headers(),))
+        threads.append(nimasou_thread)
 
         for t in threads:
             t.start()
@@ -420,8 +448,8 @@ if __name__ == '__main__':
         for t in threads:
             t.join()
         
-        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos+btku_fanhaos+Qululu_fanhaos 
-        #fanhaos = Qululu_fanhaos 
+        fanhaos=btdb_fanhaos+btbook_fanhaos+cili_fanhaos+btcherry_fanhaos+zhongziIn_fanhaos+micili_fanhaos+btku_fanhaos+Qululu_fanhaos+nimasou_fanhaos 
+        #fanhaos = nimasou_fanhaos 
 
         # Sorting bt descending
         fanhaos.sort(key=lambda fanhao:fanhao.downloading_count)
