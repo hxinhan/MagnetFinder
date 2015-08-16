@@ -271,7 +271,10 @@ def nimasou_parse(fanhao,proxy_headers):
         return nimasou_fanhaos
     
     soup = BeautifulSoup(fanhao_html)
-    soup_items = soup.find("table",attrs={"class":"table"}).find_all("tr")
+    try:
+        soup_items = soup.find("table",attrs={"class":"table"}).find_all("tr")
+    except Exception:
+        return nimasou_fanhaos
     if soup_items:
         for item in soup_items:
             title = item.find("td",attrs={"class":"x-item"}).find("a",attrs={"class":"title"}).text
