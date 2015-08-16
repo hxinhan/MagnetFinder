@@ -9,7 +9,7 @@ A real-time crawler for searching P2P magnet url.
 
 #### For Linux/OS X users:
 
-* Install BeacutifulSoup4 before use Magnet Finder :)
+* Install BeacutifulSoup4 before use MagnetFinder :)
 * Example: python MagnetFinder.py
 
 #### For Windows users:
