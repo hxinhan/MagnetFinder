@@ -27,4 +27,3 @@ class FanHao:
     
     def __getattr__(self,attr):
         raise AttributeError('Fanhao object has no attribute %s'%attr)
-
