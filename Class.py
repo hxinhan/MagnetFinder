@@ -13,6 +13,9 @@ class ProxyServer:
     def __getattr__(self,attr):
         raise AttributeError('ProxyServer object has no attribute %s'%attr)
 
+    def __call__():
+        print 'ProxyServer object called'
+
 class FanHao:
     __slots__ = ('title','file_size','downloading_count','file_number','magnet_url','resource','resource_url')
 
@@ -27,3 +30,6 @@ class FanHao:
     
     def __getattr__(self,attr):
         raise AttributeError('Fanhao object has no attribute %s'%attr)
+
+    def __call__():
+        print 'Fanhao object called'
