@@ -84,3 +84,5 @@ def proxy_setting(proxy_list):
     urllib2.install_opener(opener)
     print 'Proxy Configuring...'
     return random_proxy,new_proxy_list
+
+
