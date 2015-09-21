@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*
 
 class ProxyServer:
+    __slots__ = ('proxy_address','proxy_http','speed','proxy_type','country')
     def __init__(self,proxy_address,proxy_http,speed,proxy_type,country):
         self.proxy_address=proxy_address
         self.proxy_http=proxy_http
@@ -9,6 +10,7 @@ class ProxyServer:
         self.country=country
 
 class FanHao:
+    __slots__ = ('title','file_size','downloading_count','file_number','magnet_url','resource','resource_url')
     def __init__(self,title,file_size,downloading_count,file_number,magnet_url,resource,resource_url):
         self.title = title
         self.file_size = file_size

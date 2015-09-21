@@ -7,17 +7,10 @@ def proxy_test(proxy_configured):
     print 'Proxy Testing...'
     test_headers = {'User-Agent:':'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36'}
     test_url = 'http://www.google.com'
-    #test_url = 'http://www.btcherry.net'
-    #test_url2 = 'http://www.whereisip.net/'
     test_request = urllib2.Request(test_url,headers=test_headers)
     try:
         test_response = urllib2.urlopen(test_request,timeout=10)
-        #print test_response.getcode()
         if test_response.getcode()==200:
-            #print '-'*200 
-            #test_request2 = urllib2.Request(test_url2,headers=test_headers)
-            #test_response2 = urllib2.urlopen(test_request2,timeout=10)
-            #print test_response2.read()
             print u'Configured proxy successfully!'
             return True
         else:
